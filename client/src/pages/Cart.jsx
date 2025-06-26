@@ -15,11 +15,12 @@ const Cart = () => {
         let tempArray = []
         for (const key in cartItems){
             const product = products.find((item)=>item._id === key)
-            product.quantity = cartItems[key]
-            tempArray.push(product)
+            if (!product) continue; 
+            product.quantity = cartItems[key];
+            tempArray.push(product);
         }
-        setCartArray(tempArray)
-    }
+        setCartArray(tempArray);
+    };
 
     const getUserAddress = async () => {
         try {
@@ -78,9 +79,9 @@ const Cart = () => {
 
     useEffect (()=>{
         if(products.length > 0 && cartItems){
-            getCart()
+            getCart();
         }
-    },[products,cartItems])
+    },[products,cartItems]);
 
     useEffect(()=>{
         if(user){
@@ -88,7 +89,12 @@ const Cart = () => {
         }
     }, [user])
 
-    return products.length > 0 && cartItems ? (
+    if (!products || !Array.isArray(products) || !cartItems) 
+        {
+            return null
+        };
+
+     return  (
         <div className="flex flex-col md:flex-row py-16 max-w-6xl w-full px-6 mx-auto">
             <div className='flex-1 max-w-4xl'>
                 <h1 className="text-3xl font-medium mb-6">
@@ -107,7 +113,7 @@ const Cart = () => {
                             <div onClick={()=>{
                                 navigate(`/products/${product.category.toLowerCase()}/${product._id}`); scrollTo(0,0) 
                             }} className="cursor-pointer w-24 h-24 flex items-center justify-center border border-gray-300 rounded">
-                                <img className="max-w-full h-full object-cover" src={product.image[0]} alt={product.name} />
+                                <img className="max-w-full h-full object-cover" src={product?.image?.[0] || assets.upload_area} alt={product?.name} />
                             </div>
                             <div>
                                 <p className="hidden md:block font-semibold">{product.name}</p>
@@ -194,6 +200,7 @@ const Cart = () => {
                 </button>
             </div>
         </div>
-    ) : null
+    ) ;
 }
+
 export default Cart;
